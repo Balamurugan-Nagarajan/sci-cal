@@ -4,6 +4,7 @@ import * as math from "mathjs";
 import { factorial } from "../utils/operators";
 import { handleSpecialExceptions } from "../utils/exceptionHandlers";
 import HistoryDisplay from './HistoryDisplay';
+import HistoryModal from './HistoryModal';
 
 const Calculator = () => {
   const [displayValue, setDisplayValue] = useState("0");
@@ -13,6 +14,7 @@ const Calculator = () => {
   const [expression, setExpression] = useState("");
   const [showExpression, setShowExpression] = useState(false);
   const [isInverse, setIsInverse] = useState(false);
+  const [isRadians, setIsRadians] = useState(true);
 
   const handleClick = useCallback((value) => {
     if (value === "AC") {
@@ -21,7 +23,11 @@ const Calculator = () => {
       setShowExpression(false);
     } else if (value === "Inv") {
       setIsInverse((prev) => !prev);
-    }else if (value === "=") {
+    } else if (value === "Rad") {
+      setIsRadians(true);
+    } else if (value === "Deg") {
+      setIsRadians(false);
+    } else if (value === "=") {
       try {
         let openBrackets = (displayValue.match(/\(/g) || []).length;
         let closeBrackets = (displayValue.match(/\)/g) || []).length;
@@ -40,17 +46,16 @@ const Calculator = () => {
           .replace(/÷/g, "/")
           .replace(/x/g, "*")
           .replace(/sqrt/g, "sqrt")
-          .replace(/sin/g, "sin")
-          .replace(/cos/g, "cos")
-          .replace(/tan/g, "tan")
-          .replace(/ln/g, "log") 
+          .replace(/sin/g, isRadians ? "sin" : `sin * (math.pi / 180)`)
+          .replace(/cos/g, isRadians ? "cos" : `cos * (math.pi / 180)`)
+          .replace(/tan/g, isRadians ? "tan" : `tan * (math.pi / 180)`)
+          .replace(/ln/g, "log")
           .replace(/log10/g, "log10")
           .replace(/\^/g, "**")
           .replace(/Ans/g, lastResult || 0)
-          .replace(/sin⁻¹/g,"asin")
-          .replace(/cos⁻¹/g,"acos")
-          .replace(/tan⁻¹/g,"atan");
-        
+          .replace(/sin⁻¹/g, isRadians ? "asin" : `asin / (math.pi / 180)`)
+          .replace(/cos⁻¹/g, isRadians ? "acos" : `acos / (math.pi / 180)`)
+          .replace(/tan⁻¹/g, isRadians ? "atan" : `atan / (math.pi / 180)`);
 
         const exceptionResult = handleSpecialExceptions(expression);
         if (exceptionResult) {
@@ -62,7 +67,7 @@ const Calculator = () => {
         const formattedResult = Number(result).toFixed(10);
         setDisplayValue(formattedResult);
         setLastResult(formattedResult);
-        setExpression(expression); 
+        setExpression(expression);
         setShowExpression(true);
         setHistory((prevHistory) => [...prevHistory, expression + "=" + formattedResult]);
       } catch (error) {
@@ -75,13 +80,13 @@ const Calculator = () => {
       setDisplayValue((prev) => (prev.length > 1 ? prev.slice(0, -1) : "0"));
     }
     else if (value === "Ans") {
-      setDisplayValue((prev) => (prev === "0" ? "Ans" :  "Ans"));
+      setDisplayValue((prev) => (prev === "0" ? "Ans" : prev + "Ans"));
     }
-     else if (["ln", "sin", "cos", "tan", "log", "sq", "sin⁻¹"].includes(value)) {
+    else if (["ln", "sin", "cos", "tan", "log", "sq", "sin⁻¹", "cos⁻¹", "tan⁻¹"].includes(value)) {
       const functionMap = {
         "ln": "log(",
         "sin": "sin(",
-        "cos":"cos(",
+        "cos": "cos(",
         "tan": "tan(",
         "log": "log10(",
         "sin⁻¹": "sin⁻¹(",
@@ -95,12 +100,11 @@ const Calculator = () => {
     } else {
       setDisplayValue((prev) => (prev === "0" ? value : prev + value));
     }
-  },[displayValue, lastResult])
+  }, [displayValue, lastResult, isRadians]);
 
   const toggleHistory = () => {
     setShowHistory(!showHistory);
   };
-
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -152,42 +156,44 @@ const Calculator = () => {
 
   return (
     <div className="calculator">
-      <div className="top-bar">
-        {/* to display the expression and the result  */}
+      <HistoryModal
+        showHistory={showHistory}
+        toggleHistory={toggleHistory}
+        history={history}
+      />
+      <div className="display-container">
         <HistoryDisplay expression={expression} lastResult={lastResult} showExpression={showExpression} />
-      </div>
-    <div className="display-container">
-      <button className="history-toggle" onClick={toggleHistory}>
-        History
-      </button>
-      <div className="display">{displayValue}</div>
-    </div>
-    <div className="buttons">
-      {buttons.flat().map((btn) => (
-        <button key={btn} onClick={() => handleClick(btn)}>
-          {btn}
+        <button className="history-toggle" onClick={toggleHistory}>
+          History
         </button>
-      ))}
-    </div>
-    {/* to display the expressiona = results history */}
-    {showHistory && (
-      <div className="history-popup">
-       <div className="history-container" style={{ color: "black", backgroundColor: "white", borderRadius: "4px", padding: "1px", marginTop: "16px" }}>
-          <h2>History</h2>
-          <ul>
-            {history.length === 0 ? (
-              <li>No history available</li>
-            ) : (
-              history.map((entry, index) => (
-                <li key={index}>{entry}</li>
-              ))
-            )}
-          </ul>
-        </div>
+        <div className="display">{displayValue}</div>
       </div>
-    )}
-  </div>
- );
+      <div className="buttons">
+        <div className="rad-deg-container">
+          <button
+            className={isRadians ? "active" : ""}
+            onClick={() => handleClick("Rad")}
+          >
+            Rad
+          </button>
+          <button
+            className={!isRadians ? "active" : ""}
+            onClick={() => handleClick("Deg")}
+          >
+            Deg
+          </button>
+        </div>
+        {buttons.flat().filter(btn => btn !== "Rad" && btn !== "Deg").map((btn) => (
+          <button
+            key={btn}
+            onClick={() => handleClick(btn)}
+          >
+            {btn}
+          </button>
+        ))}
+        </div>
+        </div>
+  );
 };
 
 export default Calculator;

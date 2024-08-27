@@ -12,10 +12,10 @@
     text-align: right;
     font-size: 2rem;
     padding: 10px;
-    border-radius: 5px;/* Existing styles */
+    border-radius: 5px;
     .calculator {
       position: relative;
-      width: 300px; /* Adjust width as needed */
+      width: 300px;
       margin: auto;
     }
     
@@ -54,12 +54,13 @@
       color: white;
       padding: 5px 10px;
       cursor: pointer;
+      margin-botton: 10px;
     }
     
     .history-toggle button:hover {
       background-color: gray;
     }
-    
+
     .history-close {
       position: absolute;
       top: 10px;
@@ -69,20 +70,20 @@
       padding: 5px 10px;
       cursor: pointer;
     }
-    
+
     h2 {
       margin-top: 0;
     }
-    
+
     ul {
       list-style-type: none;
       padding: 0;
     }
-    
+
     li {
       margin-bottom: 10px;
     }
-    
+
     margin-bottom: 20px;
   }
   .buttons {
@@ -108,4 +109,18 @@
   }
   .display {
     grid-column: span 7;
+    margin-bottom: 16px;
+
+  }
+
+  button.active {
+    background-color: darkgray;
+    color: white;
+  }
+
+  .rad-deg-container {
+    background-color:gray;
+    border-radius: 5px;
+    display:Flex;
+
   }

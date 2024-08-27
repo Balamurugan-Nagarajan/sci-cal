@@ -8,7 +8,7 @@ const HistoryDisplay = ({ expression, lastResult, showExpression }) => {
         <div className="history-expression">{expression}</div>
       ) : (
         lastResult !== null && (
-          <div className="history-result">Ans: {lastResult}</div>
+          <div className="history-result">{lastResult}</div>
         )
       )}
     </div>
