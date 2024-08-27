@@ -1,9 +1,6 @@
 import { handleClick } from "src/components/Calculator.js";
-// import * as math from "mathjs";
-// import { factorial } from "../utils/operators";
-// import { handleSpecialExceptions } from "../utils/exceptionHandlers";
 
-// Initialize global state
+
 let displayValue = "0";
 const setDisplayValue = (value) => { displayValue = value; };
 

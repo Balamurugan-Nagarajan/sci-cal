@@ -1,53 +1,107 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Calculator.css";
 import * as math from "mathjs";
 import { factorial } from "../utils/operators";
 import { handleSpecialExceptions } from "../utils/exceptionHandlers";
-
-export const handleClick = (value, displayValue, setDisplayValue) => {
-  if (value === "AC") {
-    setDisplayValue("0");
-  } else if (value === "=") {
-    try {
-      let expression = displayValue
-        .replace(/(\d+)!/g, (match, p1) => factorial(Number(p1))) // Replace factorial notation
-        .replace(/ln/g, "log") // Replace ln with log for natural logarithm
-        .replace(/EXP/g, "e") // Convert EXP to e for math.js
-        .replace(/π/g, math.pi) // Replace π with the value of π
-        .replace(/e/g, math.e) // Replace e with the value of e
-        .replace(/÷/g, "/") // Replace ÷ with / for division
-        .replace(/x/g, "*") // Replace x with * for multiplication
-        .replace(/sq/g, "sqrt"); // Replace √ with sqrt for square root
-
-      console.log(expression);
-      const exceptionResult = handleSpecialExceptions(expression);
-      if (exceptionResult) {
-        setDisplayValue(exceptionResult);
-        return;
-      }
-
-      const result = math.evaluate(expression);
-      const formattedResult = Number(result).toFixed(10);
-      setDisplayValue(formattedResult);
-    } catch (error) {
-      setDisplayValue("Error");
-    }
-  } else if (value === "x!") {
-    setDisplayValue((prev) => prev + "!");
-  } else if (value === "DEL") {
-    setDisplayValue((prev) => (prev.length > 1 ? prev.slice(0, -1) : "0"));
-  } else {
-    setDisplayValue((prev) => (prev === "0" ? value : prev + value));
-  }
-};
-
+import HistoryDisplay from './HistoryDisplay';
 
 const Calculator = () => {
   const [displayValue, setDisplayValue] = useState("0");
+  const [lastResult, setLastResult] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [expression, setExpression] = useState("");
+  const [showExpression, setShowExpression] = useState(false);
+  const [isInverse, setIsInverse] = useState(false);
 
-  const localHandleClick = (value) => {
-    handleClick(value, displayValue, setDisplayValue);
+  const handleClick = useCallback((value) => {
+    if (value === "AC") {
+      setDisplayValue("0");
+      setExpression("");
+      setShowExpression(false);
+    } else if (value === "Inv") {
+      setIsInverse((prev) => !prev);
+    }else if (value === "=") {
+      try {
+        let openBrackets = (displayValue.match(/\(/g) || []).length;
+        let closeBrackets = (displayValue.match(/\)/g) || []).length;
+
+        let updatedDisplayValue = displayValue;
+        while (openBrackets > closeBrackets) {
+          updatedDisplayValue += ")";
+          closeBrackets++;
+        }
+
+        let expression = updatedDisplayValue
+          .replace(/(\d+)!/g, (_, p1) => factorial(Number(p1)))
+          .replace(/EXP/g, "e")
+          .replace(/π/g, math.pi)
+          .replace(/e/g, math.e)
+          .replace(/÷/g, "/")
+          .replace(/x/g, "*")
+          .replace(/sqrt/g, "sqrt")
+          .replace(/sin/g, "sin")
+          .replace(/cos/g, "cos")
+          .replace(/tan/g, "tan")
+          .replace(/ln/g, "log") 
+          .replace(/log10/g, "log10")
+          .replace(/\^/g, "**")
+          .replace(/Ans/g, lastResult || 0)
+          .replace(/sin⁻¹/g,"asin")
+          .replace(/cos⁻¹/g,"acos")
+          .replace(/tan⁻¹/g,"atan");
+        
+
+        const exceptionResult = handleSpecialExceptions(expression);
+        if (exceptionResult) {
+          setDisplayValue(exceptionResult);
+          return;
+        }
+
+        const result = math.evaluate(expression);
+        const formattedResult = Number(result).toFixed(10);
+        setDisplayValue(formattedResult);
+        setLastResult(formattedResult);
+        setExpression(expression); 
+        setShowExpression(true);
+        setHistory((prevHistory) => [...prevHistory, expression + "=" + formattedResult]);
+      } catch (error) {
+        console.error("Evaluation Error:", error);
+        setDisplayValue("Error");
+      }
+    } else if (value === "x!") {
+      setDisplayValue((prev) => prev + "!");
+    } else if (value === "DEL") {
+      setDisplayValue((prev) => (prev.length > 1 ? prev.slice(0, -1) : "0"));
+    }
+    else if (value === "Ans") {
+      setDisplayValue((prev) => (prev === "0" ? "Ans" :  "Ans"));
+    }
+     else if (["ln", "sin", "cos", "tan", "log", "sq", "sin⁻¹"].includes(value)) {
+      const functionMap = {
+        "ln": "log(",
+        "sin": "sin(",
+        "cos":"cos(",
+        "tan": "tan(",
+        "log": "log10(",
+        "sin⁻¹": "sin⁻¹(",
+        "cos⁻¹": "cos⁻¹(",
+        "tan⁻¹": "tan⁻¹(",
+        "sq": "sqrt("
+      };
+      setDisplayValue((prev) => (prev === "0" ? functionMap[value] : prev + functionMap[value]));
+    } else if (value === "x^y") {
+      setDisplayValue((prev) => (prev === "0" ? "0^" : prev + "^"));
+    } else {
+      setDisplayValue((prev) => (prev === "0" ? value : prev + value));
+    }
+  },[displayValue, lastResult])
+
+  const toggleHistory = () => {
+    setShowHistory(!showHistory);
   };
+
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       const keyMap = {
@@ -77,36 +131,63 @@ const Calculator = () => {
       };
       const key = event.key;
       if (keyMap[key]) {
-        localHandleClick(keyMap[key]);
+        handleClick(keyMap[key]);
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [displayValue]);
+  }, [handleClick]);
 
   const buttons = [
     ["Rad", "Deg", "x!", "(", ")", "%", "AC"],
-    ["Inv", "sin", "ln", "7", "8", "9", "÷"],
-    ["π", "cos", "log", "4", "5", "6", "x"],
-    ["e", "tan", "sq", "1", "2", "3", "-"],
+    ["Inv", isInverse ? "sin⁻¹" : "sin", "ln", "7", "8", "9", "÷"],
+    ["π", isInverse ? "cos⁻¹" : "cos", "log", "4", "5", "6", "x"],
+    ["e", isInverse ? "tan⁻¹" : "tan", "sq", "1", "2", "3", "-"],
     ["Ans", "EXP", "x^y", "0", ".", "=", "+"],
     ["DEL"],
   ];
 
   return (
     <div className="calculator">
-      <div className="display">{displayValue}</div>
-      <div className="buttons">
-        {buttons.flat().map((btn) => (
-          <button key={btn} onClick={() => localHandleClick(btn)}>
-            {btn}
-          </button>
-        ))}
+      <div className="top-bar">
+        {/* to display the expression and the result  */}
+        <HistoryDisplay expression={expression} lastResult={lastResult} showExpression={showExpression} />
       </div>
+    <div className="display-container">
+      <button className="history-toggle" onClick={toggleHistory}>
+        History
+      </button>
+      <div className="display">{displayValue}</div>
     </div>
-  );
+    <div className="buttons">
+      {buttons.flat().map((btn) => (
+        <button key={btn} onClick={() => handleClick(btn)}>
+          {btn}
+        </button>
+      ))}
+    </div>
+    {/* to display the expressiona = results history */}
+    {showHistory && (
+      <div className="history-popup">
+       <div className="history-container" style={{ color: "black", backgroundColor: "white", borderRadius: "4px", padding: "1px", marginTop: "16px" }}>
+          <h2>History</h2>
+          <ul>
+            {history.length === 0 ? (
+              <li>No history available</li>
+            ) : (
+              history.map((entry, index) => (
+                <li key={index}>{entry}</li>
+              ))
+            )}
+          </ul>
+        </div>
+      </div>
+    )}
+  </div>
+ );
 };
 
 export default Calculator;

@@ -1,8 +1,8 @@
 export const factorial = (n) => {
     if (n < 0) return 'Error';
-    let result = 1;
+    let fact = 1;
     for (let i = 1; i <= n; i++) {
-      result *= i;
+      fact *= i;
     }
-    return result;
+    return fact;
   };

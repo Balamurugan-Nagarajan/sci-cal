@@ -6,12 +6,83 @@
     border-radius: 10px;
   }
   .display {
-    background-color: #000;
-    color: #fff;
+    margin-top: 16px;
+    background-color: white;
+    color: black;
     text-align: right;
     font-size: 2rem;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 5px;/* Existing styles */
+    .calculator {
+      position: relative;
+      width: 300px; /* Adjust width as needed */
+      margin: auto;
+    }
+    
+    .display-container {
+      position: relative;
+    }
+    
+    .display {
+      font-size: 2em;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      text-align: right;
+    }
+    
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+    
+    .buttons button {
+      padding: 15px;
+      font-size: 1.5em;
+    }
+    
+    /* New styles for history */
+    .history-toggle {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    
+    .history-toggle button {
+      border: none;
+      background-color: black;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    
+    .history-toggle button:hover {
+      background-color: gray;
+    }
+    
+    .history-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: none;
+      color:white;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    
+    h2 {
+      margin-top: 0;
+    }
+    
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    li {
+      margin-bottom: 10px;
+    }
+    
     margin-bottom: 20px;
   }
   .buttons {
@@ -21,7 +92,7 @@
   }
   button {
     background-color: #555;
-    color: #fff;
+    color: white;
     font-size: 1.2rem;
     padding: 15px;
     border: none;
@@ -30,10 +101,10 @@
     transition: background-color 0.3s;
   }
   button:hover {
-    background-color: #777;
+    background-color: gray;
   }
   button:active {
-    background-color: #999;
+    background-color: black;
   }
   .display {
     grid-column: span 7;

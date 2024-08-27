@@ -1,0 +1,24 @@
+.history-display {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.history-expression, .history-result {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.history-expression {
+  color: black;
+}
+
+.history-result {
+  color: black;
+  margin-top: 5px;
+}
