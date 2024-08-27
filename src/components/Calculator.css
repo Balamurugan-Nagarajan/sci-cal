@@ -119,8 +119,10 @@
   }
 
   .rad-deg-container {
-    background-color:gray;
+    grid-column: span 2;
     border-radius: 5px;
     display:Flex;
-
+    /* height: auto; */
+    padding: 0.5rem;
+    gap: 0.5rem;
   }

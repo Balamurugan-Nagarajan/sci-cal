@@ -31,13 +31,12 @@ const Calculator = () => {
       try {
         let openBrackets = (displayValue.match(/\(/g) || []).length;
         let closeBrackets = (displayValue.match(/\)/g) || []).length;
-
         let updatedDisplayValue = displayValue;
         while (openBrackets > closeBrackets) {
           updatedDisplayValue += ")";
           closeBrackets++;
         }
-
+  
         let expression = updatedDisplayValue
           .replace(/(\d+)!/g, (_, p1) => factorial(Number(p1)))
           .replace(/EXP/g, "e")
@@ -56,13 +55,13 @@ const Calculator = () => {
           .replace(/sin⁻¹/g, isRadians ? "asin" : `asin / (math.pi / 180)`)
           .replace(/cos⁻¹/g, isRadians ? "acos" : `acos / (math.pi / 180)`)
           .replace(/tan⁻¹/g, isRadians ? "atan" : `atan / (math.pi / 180)`);
-
+  
         const exceptionResult = handleSpecialExceptions(expression);
         if (exceptionResult) {
           setDisplayValue(exceptionResult);
           return;
         }
-
+  
         const result = math.evaluate(expression);
         const formattedResult = Number(result).toFixed(10);
         setDisplayValue(formattedResult);
@@ -78,11 +77,9 @@ const Calculator = () => {
       setDisplayValue((prev) => prev + "!");
     } else if (value === "DEL") {
       setDisplayValue((prev) => (prev.length > 1 ? prev.slice(0, -1) : "0"));
-    }
-    else if (value === "Ans") {
+    } else if (value === "Ans") {
       setDisplayValue((prev) => (prev === "0" ? "Ans" : prev + "Ans"));
-    }
-    else if (["ln", "sin", "cos", "tan", "log", "sq", "sin⁻¹", "cos⁻¹", "tan⁻¹"].includes(value)) {
+    } else if (["ln", "sin", "cos", "tan", "log", "sq", "sin⁻¹", "cos⁻¹", "tan⁻¹"].includes(value)) {
       const functionMap = {
         "ln": "log(",
         "sin": "sin(",
@@ -98,9 +95,10 @@ const Calculator = () => {
     } else if (value === "x^y") {
       setDisplayValue((prev) => (prev === "0" ? "0^" : prev + "^"));
     } else {
-      setDisplayValue((prev) => (prev === "0" ? value : prev + value));
+      setDisplayValue((prev) => (prev === lastResult ? value : (prev === "0" ? value : prev + value)));
     }
   }, [displayValue, lastResult, isRadians]);
+
 
   const toggleHistory = () => {
     setShowHistory(!showHistory);
@@ -171,12 +169,20 @@ const Calculator = () => {
       <div className="buttons">
         <div className="rad-deg-container">
           <button
+          style={{
+            width : "116px",
+            hight: "53",
+          }}
             className={isRadians ? "active" : ""}
             onClick={() => handleClick("Rad")}
           >
             Rad
           </button>
           <button
+          style={{
+            width : "116px",
+            hight: "53",
+          }}
             className={!isRadians ? "active" : ""}
             onClick={() => handleClick("Deg")}
           >
