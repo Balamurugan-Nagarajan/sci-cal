@@ -9,15 +9,22 @@ const HistoryModal = ({ showHistory, toggleHistory, history }) => {
       <div className="modal-content">
         <span className="close" onClick={toggleHistory}>&times;</span>
         <h2>History</h2>
-        <ul>
+        <div className="history-list">
           {history.length === 0 ? (
-            <li>No history available</li>
+            <div className="no-history">No history available</div>
           ) : (
-            history.map((entry, index) => (
-              <li key={index}>{entry}</li>
-            ))
+            history.map((entry, index) => {
+              const [expression, result] = entry.split('=');
+              return (
+                <div key={index} className="history-entry">
+                  <div className="history-expression">{expression.trim()}</div>
+                  <div className="equal-sign">=</div>
+                  <div className="history-result">{result.trim()}</div>
+                </div>
+              );
+            })
           )}
-        </ul>
+        </div>
       </div>
     </div>
   );

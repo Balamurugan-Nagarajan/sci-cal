@@ -1,3 +1,6 @@
+.parent-container {
+  text-align: right;
+}
 .history-display {
   position: absolute;
   padding: 5px;
@@ -5,12 +8,12 @@
   border: 1px solid black;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  right: 300px;
-  width: 150px;
+  width: 230px;
   height: 40px;
+  right: 270px;
 }
 
-.history-expression, .history-result {
+.expression, .result {
   font-size: 1.2em;
 }
 

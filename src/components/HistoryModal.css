@@ -1,20 +1,23 @@
 .modal {
   display: flex;
   position: fixed;
-  width: 20%;
+  width: 40%;
   height: 20%;
   overflow: auto;
-  padding-top: 10px;
-  background-color: white;
-  border: 1px solid ;
+  padding: 10px; /* Ensure padding inside the modal */
+  background-color: black;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
   margin-left: -10px;
 }
 
-
 .modal-content {
   padding: 20px;
+  color: white;
+  width: 100%;
+  height: 100%; /* Makes content height 100% of the modal */
+  box-sizing: border-box; /* Includes padding in the element's total width and height */
 }
 
 
@@ -23,15 +26,44 @@
   top: 10px;
   right: 10px;
   font-size: 24px;
+  color: white;
   cursor: pointer;
 }
 
-.modal-overlay {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+
+h2 {
+  margin-top: 0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.history-entry {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 10px;
   background-color: black;
-  z-index: 0;
+}
+
+.history-expression,
+.history-result {
+  color: white;
+  border: 1px solid blue;
+  border-radius: 4px;
+  padding: 5px;
+  background-color: black;
+}
+
+.equal-sign {
+  color: white;
+  margin: 0 10px;
+  font-size: 1.2em;
+}
+
+.no-history {
+  color: white;
 }

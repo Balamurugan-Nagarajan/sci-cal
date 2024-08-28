@@ -36,7 +36,6 @@ const Calculator = () => {
           updatedDisplayValue += ")";
           closeBrackets++;
         }
-  
         let expression = updatedDisplayValue
           .replace(/(\d+)!/g, (_, p1) => factorial(Number(p1)))
           .replace(/EXP/g, "e")
@@ -91,11 +90,17 @@ const Calculator = () => {
         "tan⁻¹": "tan⁻¹(",
         "sq": "sqrt("
       };
-      setDisplayValue((prev) => (prev === "0" ? functionMap[value] : prev + functionMap[value]));
+      setDisplayValue((prev) => {
+        const lastChar = prev[prev.length - 1];
+        const isPreviousValue = !isNaN(lastChar) || lastChar === ")";
+        return prev === "0"
+          ? functionMap[value]
+          : (isPreviousValue ? prev + " * " + functionMap[value] : prev + functionMap[value]);
+      });
     } else if (value === "x^y") {
       setDisplayValue((prev) => (prev === "0" ? "0^" : prev + "^"));
     } else {
-      setDisplayValue((prev) => (prev === lastResult ? value : (prev === "0" ? value : prev + value)));
+      setDisplayValue((prev) => (prev === lastResult ? value : (prev === "0" ? value : prev + value))); //remove the values in the display after the result is displayed
     }
   }, [displayValue, lastResult, isRadians]);
 
@@ -167,17 +172,20 @@ const Calculator = () => {
         <div className="display">{displayValue}</div>
       </div>
       <div className="buttons">
+     
         <div className="rad-deg-container">
           <button
           style={{
             width : "116px",
             hight: "53",
+
           }}
             className={isRadians ? "active" : ""}
             onClick={() => handleClick("Rad")}
           >
             Rad
           </button>
+          <div class="vertical-line"></div>
           <button
           style={{
             width : "116px",
