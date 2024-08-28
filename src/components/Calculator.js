@@ -19,6 +19,8 @@ const Calculator = () => {
   const [isRadians, setIsRadians] = useState(true);
 
   const handleClick = useCallback((value) => {
+    const placeholder = "x";
+
     if (value === "AC") {
       setDisplayValue("0");
       setExpression("");
@@ -56,13 +58,11 @@ const Calculator = () => {
           .replace(/sin⁻¹/g, isRadians ? "asin" : `asin / (math.pi / 180)`)
           .replace(/cos⁻¹/g, isRadians ? "acos" : `acos / (math.pi / 180)`)
           .replace(/tan⁻¹/g, isRadians ? "atan" : `atan / (math.pi / 180)`);
-  
         const exceptionResult = handleSpecialExceptions(expression);
         if (exceptionResult) {
           setDisplayValue(exceptionResult);
           return;
         }
-  
         const result = math.evaluate(expression);
         const formattedResult = Number(result).toFixed(10);
         setDisplayValue(formattedResult);
@@ -82,15 +82,15 @@ const Calculator = () => {
       setDisplayValue((prev) => (prev === "0" ? "Ans" : prev + "Ans"));
     } else if (["ln", "sin", "cos", "tan", "log", "sq", "sin⁻¹", "cos⁻¹", "tan⁻¹"].includes(value)) {
       const functionMap = {
-        "ln": "log(",
-        "sin": "sin(",
-        "cos": "cos(",
-        "tan": "tan(",
-        "log": "log10(",
-        "sin⁻¹": "sin⁻¹(",
-        "cos⁻¹": "cos⁻¹(",
-        "tan⁻¹": "tan⁻¹(",
-        "sq": "sqrt("
+        "ln": `log(${placeholder})`,
+        "sin": `sin(${placeholder})`,
+        "cos": `cos(${placeholder})`,
+        "tan": `tan(${placeholder})`,
+        "log": `log10(${placeholder})`,
+        "sin⁻¹": `asin(${placeholder})`,
+        "cos⁻¹": `acos(${placeholder})`,
+        "tan⁻¹": `atan(${placeholder})`,
+        "sq": `sqrt(${placeholder})`
       };
       setDisplayValue((prev) => {
         const lastChar = prev[prev.length - 1];
@@ -102,7 +102,9 @@ const Calculator = () => {
     } else if (value === "x^y") {
       setDisplayValue((prev) => (prev === "0" ? "0^" : prev + "^"));
     } else {
-      setDisplayValue((prev) => (prev === lastResult ? value : (prev === "0" ? value : prev + value))); //remove the values in the display after the result is displayed
+      setDisplayValue((prev) => prev.includes(placeholder)
+        ? prev.replace(placeholder, value)
+        : (prev === lastResult ? value : (prev === "0" ? value : prev + value)));
     }
   }, [displayValue, lastResult, isRadians]);
 
@@ -212,5 +214,7 @@ const Calculator = () => {
 };
 
 export default Calculator;
+
+
 
 
