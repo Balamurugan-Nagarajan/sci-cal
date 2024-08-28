@@ -2,22 +2,23 @@
   display: flex;
   position: fixed;
   width: 40%;
-  height: 20%;
+  height: 70%;
   overflow: auto;
-  padding: 10px; /* Ensure padding inside the modal */
-  background-color: black;
+  padding: 10px;
+  background-color: rgb(31,31,31);
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   margin-left: -10px;
+  z-index: 1000;
 }
 
 .modal-content {
   padding: 20px;
   color: white;
   width: 100%;
-  height: 100%; /* Makes content height 100% of the modal */
-  box-sizing: border-box; /* Includes padding in the element's total width and height */
+  height: 100%;
+  box-sizing: border-box;
+  background-color: rgb(31,31,31);
 }
 
 
@@ -46,16 +47,16 @@ h2 {
   align-items: center;
   border-radius: 4px;
   padding: 10px;
-  background-color: black;
+  background-color: rgb(31,31,31);
 }
 
 .history-expression,
 .history-result {
   color: white;
-  border: 1px solid blue;
+  border: 1px solid rgb(138,180,247);
   border-radius: 4px;
   padding: 5px;
-  background-color: black;
+  background-color: rgb(31,31,31);
 }
 
 .equal-sign {

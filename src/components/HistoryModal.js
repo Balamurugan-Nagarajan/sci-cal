@@ -1,13 +1,29 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "./HistoryModal.css";
 
 const HistoryModal = ({ showHistory, toggleHistory, history }) => {
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        toggleHistory();
+      }
+    };
+    if (showHistory) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showHistory, toggleHistory]);
+
   if (!showHistory) return null;
 
   return (
     <div className="modal">
-      <div className="modal-content">
-        <span className="close" onClick={toggleHistory}>&times;</span>
+      <div className="modal-content" ref={modalRef} >
         <h2>History</h2>
         <div className="history-list">
           {history.length === 0 ? (

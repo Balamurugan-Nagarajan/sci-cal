@@ -1,3 +1,5 @@
+//updates: () brackets needed and the number should be appended inside the brackets
+
 import React, { useState, useEffect, useCallback } from "react";
 import "./Calculator.css";
 import * as math from "mathjs";
@@ -172,7 +174,6 @@ const Calculator = () => {
         <div className="display">{displayValue}</div>
       </div>
       <div className="buttons">
-     
         <div className="rad-deg-container">
           <button
           style={{
@@ -211,3 +212,5 @@ const Calculator = () => {
 };
 
 export default Calculator;
+
+
