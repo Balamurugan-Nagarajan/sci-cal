@@ -1,4 +1,4 @@
-
+//tomorrow morning make sure to handle the inputs into the evaluation functions
   import React, { useState, useEffect, useCallback } from "react";
   import "./Calculator.css";
   import * as math from "mathjs";
@@ -6,6 +6,9 @@
   import { handleSpecialExceptions } from "../utils/exceptionHandlers";
   import HistoryDisplay from './HistoryDisplay';
   import HistoryModal from './HistoryModal';
+  import {convertToMathNotation} from  "../utils/convertToMathNotation"
+  import { FaHistory ,FaEraser} from "react-icons/fa";
+
 
   const Calculator = () => {
     const [displayValue, setDisplayValue] = useState("0");
@@ -18,6 +21,7 @@
     //eslint-disable-next-line no-unused-vars
     const [isRadians, setIsRadians] = useState(true);
     const [isPlaceholderActive, setIsPlaceholderActive] = useState(true);
+    const [isSuperscriptMode, setIsSuperscriptMode] = useState(false);
 
 
     const handleClick = useCallback((value) => {
@@ -28,6 +32,7 @@
           setExpression("");
           setShowExpression(false);
           setIsPlaceholderActive(true);
+          setIsSuperscriptMode(false); // deactivate superscript mode
       } else if (value === "Inv") {
           setIsInverse((prev) => !prev);
       } else if (value === "Rad") {
@@ -36,64 +41,30 @@
           setIsRadians(false);
       } else if (value === "=") {
           try {
-            let supKeysList = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹", "⁺", "⁻", "⁼", "⁽", "⁾", "ⁿ", "ⁱ"];
-              let sup = {
-                "⁰": "0",
-                "¹": "1",
-                "²": "2",
-                "³": "3",
-                "⁴": "4",
-                "⁵": "5",
-                "⁶": "6",
-                "⁷": "7",
-                "⁸": "8",
-                "⁹": "9",
-                "⁺": "+",
-                "⁻": "-",
-                "⁼": "=",
-                "⁽": "(",
-                "⁾": ")",
-                "ⁿ": "n",
-                "ⁱ": "i"
-              };
-              let containsSuperscript = supKeysList.some(superscript => displayValue.includes(superscript));
 
-              if (containsSuperscript) {
-                console.log("entered into the if statement");
-                  let superscriptChar = supKeysList.find(superscript => displayValue.includes(superscript));
-                  let baseValue = displayValue.slice(0, displayValue.indexOf(superscriptChar));
-                  let superscriptValue = sup[superscriptChar];
 
-                  let newExpression = `${baseValue}^${superscriptValue}`;
-                  console.log('Before update:', displayValue);
+      let updatedDisplayValue = convertToMathNotation(displayValue);
 
-                    const newValue = displayValue.replace(baseValue + superscriptChar, newExpression);
-                    console.log('New value:', newValue);
 
-                    setDisplayValue(newValue);
+      console.log('Updated Display Value:', updatedDisplayValue);
 
-                    console.log('After update:', newValue);
 
-              }
-              let expression = displayValue .replace(/(\d+)¹/g, (_, p1) => `${p1}^1`)
-              .replace(/(\d+)²/g, (_, p1) => `${p1}^2`)
-
-                  .replace(/(\d+)!/g, (_, p1) => factorial(Number(p1)))
-                  .replace(/EXP/g, "e")
-                  .replace(/π/g, math.pi)
-                  .replace(/e/g, math.e)
-                  .replace(/÷/g, "/")
-                  .replace(/x/g, "*")
-                  .replace(/sqrt/g, "sqrt")
-                  .replace(/sin/g, isRadians ? "sin" : `sin * (math.pi / 180)`)
-                  .replace(/cos/g, isRadians ? "cos" : `cos * (math.pi / 180)`)
-                  .replace(/tan/g, isRadians ? "tan" : `tan * (math.pi / 180)`)
-                  .replace(/ln/g, "log")
-                  .replace(/log10/g, "log10")
-                  .replace(/Ans/g, lastResult || 0)
-                  .replace(/sin⁻¹/g, isRadians ? "asin" : `asin / (math.pi / 180)`)
-                  .replace(/cos⁻¹/g, isRadians ? "acos" : `acos / (math.pi / 180)`)
-                  .replace(/tan⁻¹/g, isRadians ? "atan" : `atan / (math.pi / 180)`);
+      let expression = updatedDisplayValue.replace(/(\d+)!/g, (_, p1) => factorial(Number(p1)))
+        .replace(/EXP/g, "e")
+        .replace(/π/g, math.pi)
+        .replace(/e/g, math.e)
+        .replace(/÷/g, "/")
+        .replace(/x/g, "*")
+        .replace(/√/g, "sqrt")
+        .replace(/sin/g, isRadians ? "sin" : `sin * (math.pi / 180)`)
+        .replace(/cos/g, isRadians ? "cos" : `cos * (math.pi / 180)`)
+        .replace(/tan/g, isRadians ? "tan" : `tan * (math.pi / 180)`)
+        .replace(/ln/g, "log")
+        .replace(/log10/g, "log10")
+        .replace(/Ans/g, lastResult || 0)
+        .replace(/sin⁻¹/g, isRadians ? "asin" : `asin / (math.pi / 180)`)
+        .replace(/cos⁻¹/g, isRadians ? "acos" : `acos / (math.pi / 180)`)
+        .replace(/tan⁻¹/g, isRadians ? "atan" : `atan / (math.pi / 180)`);
               const exceptionResult = handleSpecialExceptions(expression);
               if (exceptionResult) {
                   setDisplayValue(exceptionResult);
@@ -135,7 +106,7 @@
           }
         });
       }
-      else if (["ln", "sin", "cos", "tan", "log", "sq", "sin⁻¹", "cos⁻¹", "tan⁻¹"].includes(value)) {
+      else if (["ln", "sin", "cos", "tan", "log", "√", "sin⁻¹", "cos⁻¹", "tan⁻¹"].includes(value)) {
         const functionMap = {
             "ln": `log(${placeholder}`,
             "sin": `sin(${placeholder}`,
@@ -145,7 +116,7 @@
             "sin⁻¹": `asin(${placeholder}`,
             "cos⁻¹": `acos(${placeholder}`,
             "tan⁻¹": `atan(${placeholder}`,
-            "sq": `sqrt(${placeholder}`
+            "√": `√(${placeholder}`
         };
 
         if (displayValue.includes(placeholder)) {
@@ -168,9 +139,9 @@
         ? prev.replace(placeholder, "◻" + ")")
         : (prev === lastResult ? value : (prev === "0" ? value : prev + "◻"))
     );
+    setIsSuperscriptMode(true); // Activate superscript mode
 
   } else {
-    //for reference :https://stackoverflow.com/questions/61733331/js-power-sign-exponent-to-number
     let sup = {
       "0": "⁰",
       "1": "¹",
@@ -183,19 +154,22 @@
       "8": "⁸",
       "9": "⁹",
     };
-    if (displayValue.endsWith("◻")) {
-      // Get the superscript equivalent from the sup object | for reference: https://emojidb.org/box-emojis
+    if (isSuperscriptMode) {
       const superscriptValue = sup[value] || value;
-      // Remove the box (◻) and append the superscript value
-      setDisplayValue((prev) => prev.slice(0, -1) + superscriptValue);
-    } else if (displayValue.includes(placeholder)) {
+      setDisplayValue((prev) => {
+        if (prev.endsWith("◻")) { //for the first time
+          return prev.slice(0, -1) + superscriptValue;
+        } else { //until the isSuperscriptMode is true the values are added to the superscript
+          return prev + superscriptValue;
+        }
+      });
+    }//for the brackets
+    else if (displayValue.includes(placeholder)) {
       setDisplayValue((prev) => prev.replace(placeholder, value + ")"));
     } else {
-      setDisplayValue((prev) => prev === lastResult
-        ? value
-        : (prev === "0" ? value : prev + value)
-      );
+      setDisplayValue((prev) => prev === "0" ? value : prev + value);
     }
+    console.log(displayValue);
   }
   }, [displayValue, lastResult, isRadians, factorial]);
 
@@ -243,12 +217,13 @@
     }, [handleClick]);
 
     const buttons = [
-      ["Rad", "Deg", "x!", "(", ")", "%", "AC"],
-      ["Inv", isInverse ? "sin⁻¹" : "sin", "ln", "7", "8", "9", "÷"],
-      ["π", isInverse ? "cos⁻¹" : "cos", "log", "4", "5", "6", "x"],
-      ["e", isInverse ? "tan⁻¹" : "tan", "sq", "1", "2", "3", "-"],
-      ["Ans", "EXP", "x^y", "0", ".", "=", "+"],
-      ["DEL"],
+        ["Rad", "Deg", "x!", "(", ")", "%", "AC"],
+        ["Inv", isInverse ? "sin⁻¹" : "sin", "ln", "7", "8", "9", "÷"],
+        ["π", isInverse ? "cos⁻¹" : "cos", "log", "4", "5", "6", "x"],
+        ["e", isInverse ? "tan⁻¹" : "tan", "√", "1", "2", "3", "-"],
+        ["Ans", "EXP", "x^y", "0", ".", "=", "+"],
+        ["DEL"]
+
     ];
 
     return (
@@ -261,7 +236,7 @@
         <div className="display-container">
           <HistoryDisplay expression={expression} lastResult={lastResult} showExpression={showExpression} />
           <button className="history-toggle" onClick={toggleHistory}>
-            History
+          <FaHistory />
           </button>
           <div className="display">
           {displayValue.split(')').map((part, index) => (
@@ -306,7 +281,7 @@
               key={btn}
               onClick={() => handleClick(btn)}
             >
-              {btn}
+              {btn == "DEL" ? <FaEraser /> : btn}
             </button>
           ))}
           </div>

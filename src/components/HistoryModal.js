@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./HistoryModal.css";
+import { FaHistory } from "react-icons/fa";
 
 const HistoryModal = ({ showHistory, toggleHistory, history }) => {
   const modalRef = useRef(null);
@@ -24,7 +25,7 @@ const HistoryModal = ({ showHistory, toggleHistory, history }) => {
   return (
     <div className="modal">
       <div className="modal-content" ref={modalRef} >
-        <h2>History</h2>
+        <h2><FaHistory /></h2>
         <div className="history-list">
           {history.length === 0 ? (
             <div className="no-history">No history available</div>
