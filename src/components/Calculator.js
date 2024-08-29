@@ -36,7 +36,49 @@
           setIsRadians(false);
       } else if (value === "=") {
           try {
-              let expression = displayValue.replace(/(\d+)!/g, (_, p1) => factorial(Number(p1)))
+            let supKeysList = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹", "⁺", "⁻", "⁼", "⁽", "⁾", "ⁿ", "ⁱ"];
+              let sup = {
+                "⁰": "0",
+                "¹": "1",
+                "²": "2",
+                "³": "3",
+                "⁴": "4",
+                "⁵": "5",
+                "⁶": "6",
+                "⁷": "7",
+                "⁸": "8",
+                "⁹": "9",
+                "⁺": "+",
+                "⁻": "-",
+                "⁼": "=",
+                "⁽": "(",
+                "⁾": ")",
+                "ⁿ": "n",
+                "ⁱ": "i"
+              };
+              let containsSuperscript = supKeysList.some(superscript => displayValue.includes(superscript));
+
+              if (containsSuperscript) {
+                console.log("entered into the if statement");
+                  let superscriptChar = supKeysList.find(superscript => displayValue.includes(superscript));
+                  let baseValue = displayValue.slice(0, displayValue.indexOf(superscriptChar));
+                  let superscriptValue = sup[superscriptChar];
+
+                  let newExpression = `${baseValue}^${superscriptValue}`;
+                  console.log('Before update:', displayValue);
+
+                    const newValue = displayValue.replace(baseValue + superscriptChar, newExpression);
+                    console.log('New value:', newValue);
+
+                    setDisplayValue(newValue);
+
+                    console.log('After update:', newValue);
+
+              }
+              let expression = displayValue .replace(/(\d+)¹/g, (_, p1) => `${p1}^1`)
+              .replace(/(\d+)²/g, (_, p1) => `${p1}^2`)
+
+                  .replace(/(\d+)!/g, (_, p1) => factorial(Number(p1)))
                   .replace(/EXP/g, "e")
                   .replace(/π/g, math.pi)
                   .replace(/e/g, math.e)
@@ -48,7 +90,6 @@
                   .replace(/tan/g, isRadians ? "tan" : `tan * (math.pi / 180)`)
                   .replace(/ln/g, "log")
                   .replace(/log10/g, "log10")
-                  .replace(/\^/g, "^")
                   .replace(/Ans/g, lastResult || 0)
                   .replace(/sin⁻¹/g, isRadians ? "asin" : `asin / (math.pi / 180)`)
                   .replace(/cos⁻¹/g, isRadians ? "acos" : `acos / (math.pi / 180)`)
@@ -58,7 +99,7 @@
                   setDisplayValue(exceptionResult);
                   return;
               }
-              console.log(expression);
+              console.log(`${expression} this is expression`);
               const result = math.evaluate(expression);
               const formattedResult = Number(result).toFixed(10);
               setDisplayValue(formattedResult);
@@ -76,7 +117,7 @@
           setDisplayValue((prev) => (prev.length > 1 ? prev.slice(0, -1) : "0"));
       } else if (value === "Ans") {
 
-        //adding th ans to the bracket
+        //adding the ans to the bracket
         setDisplayValue((prev) => prev.includes(placeholder)
         ? prev.replace(placeholder, value + ")")
         : (prev === lastResult ? value : (prev === "0" ? value : prev + value))
@@ -129,6 +170,7 @@
     );
 
   } else {
+    //for reference :https://stackoverflow.com/questions/61733331/js-power-sign-exponent-to-number
     let sup = {
       "0": "⁰",
       "1": "¹",
@@ -142,11 +184,10 @@
       "9": "⁹",
     };
     if (displayValue.endsWith("◻")) {
-      // Get the superscript equivalent from the sup object
+      // Get the superscript equivalent from the sup object | for reference: https://emojidb.org/box-emojis
       const superscriptValue = sup[value] || value;
       // Remove the box (◻) and append the superscript value
       setDisplayValue((prev) => prev.slice(0, -1) + superscriptValue);
-      console.log(displayValue);
     } else if (displayValue.includes(placeholder)) {
       setDisplayValue((prev) => prev.replace(placeholder, value + ")"));
     } else {
