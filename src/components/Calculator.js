@@ -87,26 +87,35 @@
             return prev; // Do nothing if there's no placeholder
           }
         });
-      }else if (["ln", "sin", "cos", "tan", "log", "sq", "sin⁻¹", "cos⁻¹", "tan⁻¹"].includes(value)) {
-          const functionMap = {
-              "ln": `log(${placeholder}`, //when the function is pressed then the function is returned with the placeholder
-              "sin": `sin(${placeholder}`,
-              "cos": `cos(${placeholder}`,
-              "tan": `tan(${placeholder}`,
-              "log": `log10(${placeholder}`,
-              "sin⁻¹": `asin(${placeholder}`,
-              "cos⁻¹": `acos(${placeholder}`,
-              "tan⁻¹": `atan(${placeholder}`,
-              "sq": `sqrt(${placeholder}`
-          };
-          setDisplayValue((prev) => {
-              const lastChar = prev[prev.length - 1];
-              const isPreviousValue = !isNaN(lastChar) || lastChar === ")";
-              return prev === "0"
-                  ? functionMap[value]
-                  : (isPreviousValue ? prev + " * " + functionMap[value] : prev + functionMap[value]);
-          });
-      } else if (value === "x^y") {
+      }
+      else if (["ln", "sin", "cos", "tan", "log", "sq", "sin⁻¹", "cos⁻¹", "tan⁻¹"].includes(value)) {
+        const functionMap = {
+            "ln": `log(${placeholder}`,
+            "sin": `sin(${placeholder}`,
+            "cos": `cos(${placeholder}`,
+            "tan": `tan(${placeholder}`,
+            "log": `log10(${placeholder}`,
+            "sin⁻¹": `asin(${placeholder}`,
+            "cos⁻¹": `acos(${placeholder}`,
+            "tan⁻¹": `atan(${placeholder}`,
+            "sq": `sqrt(${placeholder}`
+        };
+
+        if (displayValue.includes(placeholder)) {
+            setDisplayValue((prev) => prev.includes(placeholder)
+                ? prev.replace(placeholder, functionMap[value] + ")")
+                : (prev === lastResult ? value : (prev === "0" ? value : prev + value))
+            );
+        } else {
+            setDisplayValue((prev) => {
+                const lastChar = prev[prev.length - 1];
+                const isPreviousValue = !isNaN(lastChar) || lastChar === ")";
+                return prev === "0"
+                    ? functionMap[value]
+                    : (isPreviousValue ? prev + " * " + functionMap[value] : prev + functionMap[value]);
+            });
+        }
+    } else if (value === "x^y") {
           setDisplayValue((prev) => (prev === "0" ? "0^" : prev + "^"));
       } else {
           setDisplayValue((prev) => prev.includes(placeholder) //check if the expression contains the placeholder(")") , if so it replaces the placeholder with the input value.
