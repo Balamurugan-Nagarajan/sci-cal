@@ -99,7 +99,7 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-   
+
   }
   button:hover {
     background-color: gray;
@@ -147,4 +147,15 @@
   border: none;
   box-shadow: none;
   transform: none;
+}
+
+
+
+.placeholder {
+  color: rgb(204,204,204);
+  font-weight: bold;
+}
+
+.placeholder.active {
+  color:black;
 }
