@@ -159,3 +159,13 @@
 .placeholder.active {
   color:black;
 }
+
+
+
+
+.superscript {
+  position: relative;
+  bottom: -4em;
+  font-size: 70%;
+  vertical-align: baseline;
+}

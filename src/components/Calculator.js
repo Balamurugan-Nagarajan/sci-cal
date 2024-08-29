@@ -48,7 +48,7 @@
                   .replace(/tan/g, isRadians ? "tan" : `tan * (math.pi / 180)`)
                   .replace(/ln/g, "log")
                   .replace(/log10/g, "log10")
-                  .replace(/\^/g, "**")
+                  .replace(/\^/g, "^")
                   .replace(/Ans/g, lastResult || 0)
                   .replace(/sin⁻¹/g, isRadians ? "asin" : `asin / (math.pi / 180)`)
                   .replace(/cos⁻¹/g, isRadians ? "acos" : `acos / (math.pi / 180)`)
@@ -58,6 +58,7 @@
                   setDisplayValue(exceptionResult);
                   return;
               }
+              console.log(expression);
               const result = math.evaluate(expression);
               const formattedResult = Number(result).toFixed(10);
               setDisplayValue(formattedResult);
@@ -74,7 +75,12 @@
       } else if (value === "DEL") {
           setDisplayValue((prev) => (prev.length > 1 ? prev.slice(0, -1) : "0"));
       } else if (value === "Ans") {
-          setDisplayValue((prev) => (prev === "0" ? "Ans" : prev + "Ans"));
+
+        //adding th ans to the bracket
+        setDisplayValue((prev) => prev.includes(placeholder)
+        ? prev.replace(placeholder, value + ")")
+        : (prev === lastResult ? value : (prev === "0" ? value : prev + value))
+    );
       }
       else if (value === ")") {
         setDisplayValue((prev) => {
@@ -116,14 +122,41 @@
             });
         }
     } else if (value === "x^y") {
-          setDisplayValue((prev) => (prev === "0" ? "0^" : prev + "^"));
-      } else {
-          setDisplayValue((prev) => prev.includes(placeholder) //check if the expression contains the placeholder(")") , if so it replaces the placeholder with the input value.
-              ? prev.replace(placeholder, value + ")")
-              : (prev === lastResult ? value : (prev === "0" ? value : prev + value)));
-      }
-  }, [displayValue, lastResult, isRadians ,factorial]);
+      //replace the ^ with the box as the super script
+      setDisplayValue((prev) => prev.includes(placeholder)
+        ? prev.replace(placeholder, "◻" + ")")
+        : (prev === lastResult ? value : (prev === "0" ? value : prev + "◻"))
+    );
 
+  } else {
+    let sup = {
+      "0": "⁰",
+      "1": "¹",
+      "2": "²",
+      "3": "³",
+      "4": "⁴",
+      "5": "⁵",
+      "6": "⁶",
+      "7": "⁷",
+      "8": "⁸",
+      "9": "⁹",
+    };
+    if (displayValue.endsWith("◻")) {
+      // Get the superscript equivalent from the sup object
+      const superscriptValue = sup[value] || value;
+      // Remove the box (◻) and append the superscript value
+      setDisplayValue((prev) => prev.slice(0, -1) + superscriptValue);
+      console.log(displayValue);
+    } else if (displayValue.includes(placeholder)) {
+      setDisplayValue((prev) => prev.replace(placeholder, value + ")"));
+    } else {
+      setDisplayValue((prev) => prev === lastResult
+        ? value
+        : (prev === "0" ? value : prev + value)
+      );
+    }
+  }
+  }, [displayValue, lastResult, isRadians, factorial]);
 
     const toggleHistory = () => {
       setShowHistory(!showHistory);
