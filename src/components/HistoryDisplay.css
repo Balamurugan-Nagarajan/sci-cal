@@ -25,3 +25,9 @@
   color: black;
   margin-top: 5px;
 }
+
+
+.superscript-mode {
+  display: flex;
+  align-items: baseline;
+}

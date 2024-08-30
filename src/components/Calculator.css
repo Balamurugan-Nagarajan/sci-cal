@@ -171,29 +171,35 @@
 }
 
 
-/* Calculator.css */
+/* styling the superscript Box */
 
 .square-small {
   font-size: 12px;
+  transform: translateY(-50%); /* Adjust vertical position */
 }
 
 .square-medium {
   font-size: 24px;
+  transform: translateY(-50%); /* Adjust vertical position */
 }
 
 .square-large {
   font-size: 36px;
+  transform: translateY(-30%); /* Adjust vertical position */
 }
 
 .square-xlarge {
   font-size: 48px;
 }
 
-.square-xxlarge {
-  font-size: 60px;
-}
-
 /* .display {
   display: flex;
   align-items: center;
 } */
+
+
+
+.display-content{
+  display: flex;
+  align-items: center;
+}

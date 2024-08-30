@@ -178,9 +178,10 @@ const Calculator = () => {
             ? value
             : prev === "0"
             ? value
-            : prev + "◻";
+            : prev ;
         });
         setIsSuperscriptMode(true); // Activate superscript mode
+        setClassIndex(1); // Set the class index to 1
       } else {
         let sup = {
           0: "⁰",
@@ -292,37 +293,36 @@ const Calculator = () => {
           <FaHistory />
         </button>
         <div className="display">
-          {/* renders only if the isSuperscriptMode is true */}
+  <div className="display-content">
+    {displayValue.split(")").map((part, index) => (
+      <React.Fragment key={index}>
+        {part}
+        {index < displayValue.split(")").length - 1 && (
+          <span
+            className={
+              isPlaceholderActive ? "placeholder" : "placeholder active"
+            }
+          >
+            )
+          </span>
+        )}
+      </React.Fragment>
+    ))}
+    {isSuperscriptMode && (
+  <div className="superscript-mode">
+    {classIndex >= 0 && classIndex < classes.length && (
+      <span
+        className={classes[classIndex]}
+        style={{ display: "inline-block", marginRight: "10px" }}
+      >
+        ◻
+      </span>
+    )}
+  </div>
+)}
+  </div>
+</div>
 
-          {displayValue.split(")").map((part, index) => (
-            <React.Fragment key={index}>
-              {part}
-              {index < displayValue.split(")").length - 1 && (
-                <span
-                  className={
-                    isPlaceholderActive ? "placeholder" : "placeholder active"
-                  }
-                >
-                  )
-                </span>
-              )}
-            </React.Fragment>
-          ))}
-
-          {isSuperscriptMode && (
-            <div className="superscript-mode">
-              {classes.map((className, index) => (
-                <span
-                  key={index}
-                  className={className}
-                  style={{ display: "inline-block", marginRight: "10px" }}
-                >
-                  ◻
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
       <div className="buttons">
         <div className="rad-deg-container">
