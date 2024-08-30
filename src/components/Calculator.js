@@ -1,5 +1,5 @@
 //tomorrow morning make sure to handle the inputs into the evaluation functions
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback,useRef } from "react";
 import "./Calculator.css";
 import * as math from "mathjs";
 import { factorial } from "../utils/operators";
@@ -22,6 +22,25 @@ const Calculator = () => {
   const [isPlaceholderActive, setIsPlaceholderActive] = useState(true);
   const [isSuperscriptMode, setIsSuperscriptMode] = useState(false);
   const [classIndex, setClassIndex] = useState(0);
+  const superscriptRef = useRef(null);
+  const [isRendered, setIsRendered] = useState(false);
+  const [shouldRenderSuperscript, setShouldRenderSuperscript] = useState(true);
+
+  const classes = [
+    "square-xlarge",
+    "square-large",
+    "square-medium",
+    "square-small",
+  ];
+
+  useEffect(() => {
+    if (superscriptRef.current) {
+      // Check if the div with the superscriptRef is present in the DOM
+      setIsRendered(true);
+    } else {
+      setIsRendered(false);
+    }
+  }, [isSuperscriptMode, classIndex, classes]);
 
   const handleClick = useCallback(
     (value) => {
@@ -180,8 +199,11 @@ const Calculator = () => {
             ? value
             : prev ;
         });
+
+        setClassIndex(1);
+         // Set the class index to 1
         setIsSuperscriptMode(true); // Activate superscript mode
-        setClassIndex(1); // Set the class index to 1
+
       } else {
         let sup = {
           0: "⁰",
@@ -198,9 +220,10 @@ const Calculator = () => {
         if (isSuperscriptMode) {
           const superscriptValue = sup[value] || value;
           setDisplayValue((prev) => {
-            if (prev.endsWith("◻")) {
+            if (isRendered) {
               //for the first time
-              return prev.slice(0, -1) + superscriptValue;
+              setShouldRenderSuperscript(false);
+              return prev + superscriptValue;
             } else {
               //until the isSuperscriptMode is true the values are added to the superscript
               return prev + superscriptValue;
@@ -269,12 +292,7 @@ const Calculator = () => {
     ["Ans", "EXP", "x^y", "0", ".", "=", "+"],
     ["DEL"],
   ];
-  const classes = [
-    "square-xlarge",
-    "square-large",
-    "square-medium",
-    "square-small",
-  ];
+ 
 
   return (
     <div className="calculator">
@@ -293,36 +311,35 @@ const Calculator = () => {
           <FaHistory />
         </button>
         <div className="display">
-  <div className="display-content">
-    {displayValue.split(")").map((part, index) => (
-      <React.Fragment key={index}>
-        {part}
-        {index < displayValue.split(")").length - 1 && (
-          <span
-            className={
-              isPlaceholderActive ? "placeholder" : "placeholder active"
-            }
-          >
-            )
-          </span>
-        )}
-      </React.Fragment>
-    ))}
-    {isSuperscriptMode && (
-  <div className="superscript-mode">
-    {classIndex >= 0 && classIndex < classes.length && (
-      <span
-        className={classes[classIndex]}
-        style={{ display: "inline-block", marginRight: "10px" }}
-      >
-        ◻
-      </span>
-    )}
-  </div>
-)}
-  </div>
-</div>
-
+          <div className="display-content">
+            {displayValue.split(")").map((part, index) => (
+              <React.Fragment key={index}>
+                {part}
+                {index < displayValue.split(")").length - 1 && (
+                  <span
+                    className={
+                      isPlaceholderActive ? "placeholder" : "placeholder active"
+                    }
+                  >
+                    )
+                  </span>
+                )}
+              </React.Fragment>
+            ))}
+            {shouldRenderSuperscript && isSuperscriptMode && (
+              <div className="superscript-mode" ref={superscriptRef}>
+                {classIndex >= 0 && classIndex < classes.length && (
+                  <span
+                    className={classes[classIndex]}
+                    style={{ display: "inline-block", marginRight: "10px" }}
+                  >
+                    ◻
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       <div className="buttons">
         <div className="rad-deg-container">
