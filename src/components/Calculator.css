@@ -169,3 +169,31 @@
   font-size: 70%;
   vertical-align: baseline;
 }
+
+
+/* Calculator.css */
+
+.square-small {
+  font-size: 12px;
+}
+
+.square-medium {
+  font-size: 24px;
+}
+
+.square-large {
+  font-size: 36px;
+}
+
+.square-xlarge {
+  font-size: 48px;
+}
+
+.square-xxlarge {
+  font-size: 60px;
+}
+
+/* .display {
+  display: flex;
+  align-items: center;
+} */
